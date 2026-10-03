@@ -24,7 +24,7 @@ class BallState:
 class ControlState:
     """Current driving mode, browser keys, and debug requests."""
 
-    mode: str = 'auto'
+    mode: str = 'manual'
     active_keys: Set[str] = field(default_factory=set)
     keys_last_seen: float = 0.0
     print_vector_requested: bool = False

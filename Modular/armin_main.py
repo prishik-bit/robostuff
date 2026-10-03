@@ -93,18 +93,18 @@ class ArminApplication:
         self.goal_toggle_switch.when_released = lambda: self.toggle_goal('blue_goal')
         self.last_goal_toggled_time : float = 0.0
 
-    def toggle_mode(self, mode: str | None = None) -> None:        
-        if mode != None:
-            if mode not in ['manual', 'auto']: raise ValueError('Please enter a valid robot control mode')
-            self.robot_state.control.mode = mode
-            return
+    # def toggle_mode(self, mode: str | None = None) -> None:        
+    #     if mode != None:
+    #         if mode not in ['manual', 'auto']: raise ValueError('Please enter a valid robot control mode')
+    #         self.robot_state.control.mode = mode
+    #         return
         
-        if self.robot_state.control.mode == 'manual':
-            self.robot_state.control.mode = 'auto'
-            self.robot_state.control.active_keys.clear()
-        else:
-            self.robot_state.control.mode = 'manual'
-        return
+    #     if self.robot_state.control.mode == 'manual':
+    #         self.robot_state.control.mode = 'auto'
+    #         self.robot_state.control.active_keys.clear()
+    #     else:
+    #         self.robot_state.control.mode = 'manual'
+    #     return
     
     def toggle_goal(self, goal: str | None = None) -> None:
         if time.time() - self.last_goal_toggled_time < 2.0:
