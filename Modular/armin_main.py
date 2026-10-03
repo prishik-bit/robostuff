@@ -93,18 +93,18 @@ class ArminApplication:
         self.goal_toggle_switch.when_released = lambda: self.toggle_goal('blue_goal')
         self.last_goal_toggled_time : float = 0.0
 
-    # def toggle_mode(self, mode: str | None = None) -> None:        
-    #     if mode != None:
-    #         if mode not in ['manual', 'auto']: raise ValueError('Please enter a valid robot control mode')
-    #         self.robot_state.control.mode = mode
-    #         return
+    def toggle_mode(self, mode: str | None = None) -> None:        
+        if mode != None:
+            if mode not in ['manual', 'auto']: raise ValueError('Please enter a valid robot control mode')
+            self.robot_state.control.mode = mode
+            return
         
-    #     if self.robot_state.control.mode == 'manual':
-    #         self.robot_state.control.mode = 'auto'
-    #         self.robot_state.control.active_keys.clear()
-    #     else:
-    #         self.robot_state.control.mode = 'manual'
-    #     return
+        if self.robot_state.control.mode == 'manual':
+            self.robot_state.control.mode = 'auto'
+            self.robot_state.control.active_keys.clear()
+        else:
+            self.robot_state.control.mode = 'manual'
+        return
     
     def toggle_goal(self, goal: str | None = None) -> None:
         if time.time() - self.last_goal_toggled_time < 2.0:
@@ -128,6 +128,7 @@ class ArminApplication:
         self.robot_motors.setup()
         picam = self.robot_vision.setup_camera()
         self.toggle_mode('manual')
+        
         # if self.goal_toggle_switch.is_active:
         #     self.toggle_goal('yellow_goal')
         # else:
@@ -257,8 +258,8 @@ class ArminApplication:
         while self.robot_state.is_running:
             now = time.time()
             control = self.robot_state.control
-            self.robot_motors.spin_dribbler(True)
             if control.mode == 'manual':
+                self.robot_motors.spin_dribbler(True)
                 timeout = self.robot_config.control.key_lost_timeout
                 stale = (
                     not control.active_keys
@@ -361,7 +362,7 @@ class ArminApplication:
             state.has_orbited = False
 
         if state.has_possession: # Maintain posession
-            print(goal_distance)
+            print("going to goal")
             if goal_vector:
                 if goal_distance < vision.goal_stop_distance:
                     motors.spin_dribbler(False)
@@ -372,18 +373,24 @@ class ArminApplication:
                 motors.drive_to_goal(goal_bearing, rotation_speed)
             else:
                 motors.spin_dribbler(True)
-                motors.spin(motors.config.max_speed * 0.5)
+                motors.spin(motors.config.max_speed * 0.7)
             return
         
         if state.has_orbited and not state.has_possession:
             # target_bearing = goal_bearing - ball_bearing
             # if motors.spin_to_bearing(target_bearing, 3):
+            print(ball_bearing)
             motors.spin_dribbler(True)
             motors.rotate_and_move(ball_bearing, motors.config.max_speed, rotation_speed)
+            
+            if abs(goal_bearing - ball_bearing) <= 10:
+                state.has_possesion = True
+            
             if ball_distance <= vision.ball_dribble_radius:
                 state.has_possession = True
         
         elif ball_distance > vision.orbit_radius:
+            print("Is orbiting")
             if ball_distance - vision.orbit_radius > 10: # Orbiting a little early
                 motors.orbit_to_behind_ball()            
             motors.rotate_and_move(ball_bearing, motors.config.max_speed, rotation_speed)

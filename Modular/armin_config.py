@@ -36,21 +36,21 @@ class MotorConfig:
     
     enable_dribbler: bool = True
     dribbler_address: int = 29
-    dribbler_calibration: Tuple[int, int] = (1433137664, 1249)
+    dribbler_calibration: Tuple[int, int] = (1439443968, 1248)
     dribbler_speed: int = -250_000_000
     
-    orbit_standoff_radius: int = 165
-    orbit_arrived_angle_tolerance: float = 1.0
-    orbit_arrived_radius_tolerance_ratio: float = 0.15
-    orbit_full_speed_angle: float = 15.0
+    orbit_standoff_radius: int = 170
+    orbit_arrived_angle_tolerance: float = 1
+    orbit_arrived_radius_tolerance_ratio: float = 0.10
+    orbit_full_speed_angle: float = 25.0
     orbit_max_tangential_speed_ratio: float = 0.5
     orbit_max_radial_speed_ratio: float = 0.3
-    orbit_radial_gain: float = 400_000.0
+    orbit_radial_gain: float = 300_000.0
     
     drive_to_ball_speed_ratio: float = 1.0
     goal_search_speed_ratio: float = 0.2
     goal_rotation_speed_ratio: float = 0.3
-    goal_align_tolerance_degrees: float = 5
+    goal_align_tolerance_degrees: float = 2
 
     # The previous version wrapped each pair in MotorCalibration objects:
     # calibrations = (
@@ -73,9 +73,9 @@ class VisionConfig:
     
     min_contour_area: int = 1
     dead_zone_radius: int = 132
-    ball_dribble_radius: int = 147
+    ball_dribble_radius: int = 145
     orbit_radius: int = 190
-    camera_rotation_offset: float = 0 #-90.0
+    camera_rotation_offset: float = 0
     ball_lost_timeout: float = 0.5
     clahe_clip_limit: float = 2.5
     clahe_tile_grid: Tuple[int, int] = (8, 8)
@@ -94,8 +94,8 @@ class VisionConfig:
     yellow_goal_lower: Tuple[int, int, int] = (20, 180, 30)
     yellow_goal_upper: Tuple[int, int, int] = (40, 255, 255)
     
-    blue_goal_lower: Tuple[int, int, int] = (95, 231, 160)
-    blue_goal_upper: Tuple[int, int, int] = (120, 255, 200)
+    blue_goal_lower: Tuple[int, int, int] = (95, 200, 160)
+    blue_goal_upper: Tuple[int, int, int] = (120, 255, 255)
 
     goal_stop_distance : int = 200
     goal_min_contour_area : int = 120  # goals are big; a larger floor rejects speckle
@@ -107,7 +107,7 @@ class VisionConfig:
     
     goals : Tuple[str, str] = ('yellow_goal', 'blue_goal')
     
-    target_goal : str = goals[0]  # 'yellow_goal' or 'blue_goal' - the goal we attack
+    target_goal : str = goals[1]  # 'yellow_goal' or 'blue_goal' - the goal we attack
     opposite_goal : str = goals[1] if target_goal == goals[0] else goals[0]
     
 
@@ -133,7 +133,7 @@ class CameraConfig:
 class TOFConfig:
     ADDRESS_SET_1 = [0x51, 0x52, 0x53, 0x50, 0x55, 0x56, 0x57, 0x5a] 
     TOF_CHAIN_1 = TOFChain(ADDRESS_SET_1)
-    pass
+    
 
 
 @dataclass(frozen=True)
@@ -152,7 +152,7 @@ class ControlConfig:
     # camera_loop_delay: float = 0.01
     debug_motor: bool = True
     debug_print_hz: int = 5
-    # movement_switch_gpio: int = 26
+    movement_switch_gpio: int = 26
     goal_switch_gpio : int = 25
     manual_translation_speed_ratio: float = 0.7
     manual_rotation_speed_ratio: float = 0.3

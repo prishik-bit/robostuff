@@ -81,6 +81,7 @@ class MotorController:
 
     def spin_dribbler(self, engaged: bool) -> None:
         """Turn the dribbler on or off, if one exists."""
+        
         if not self.config.enable_dribbler or self.dribbler_motor is None:
             return
         self.dribbler_motor.set_speed(self.config.dribbler_speed if engaged else 0)
@@ -201,17 +202,20 @@ class MotorController:
             math.degrees(math.atan2(dx, -dy)) + self.vision_config.camera_rotation_offset
         ) % 360
         angular_error = ((ball_bearing - target_bearing + 180) % 360) - 180  # signed
-        radius = cfg.orbit_standoff_radius
+        standoff_radius = cfg.orbit_standoff_radius
 
+        # if abs(angular_error) <= 10:
+        #     standoff_radius = cfg.orbit_standoff_radius * 0.98
+        
         if (abs(angular_error) <= cfg.orbit_arrived_angle_tolerance
-                and abs(distance - radius) <= radius * cfg.orbit_arrived_radius_tolerance_ratio):
+                and abs(distance - standoff_radius) <= standoff_radius * cfg.orbit_arrived_radius_tolerance_ratio):
             self.stop_wheels()
             self._debug("Arrived behind ball")
             return True
 
         # Radial component: hold the standoff radius.
         max_radial = cfg.max_speed * cfg.orbit_max_radial_speed_ratio
-        radial_speed = self.clamp((distance - radius) * cfg.orbit_radial_gain,
+        radial_speed = self.clamp((distance - standoff_radius) * cfg.orbit_radial_gain,
                                   -max_radial, max_radial)
 
         # Tangential component: sweep sideways, easing off near the target angle.
@@ -219,11 +223,11 @@ class MotorController:
         ease = min(abs(angular_error) / cfg.orbit_full_speed_angle, 1.0)
         tangent_speed = cfg.max_speed * cfg.orbit_max_tangential_speed_ratio * ease
 
-        def unit(bearing):  # bearing -> (x, y) unit vector, y down like the image
+        def get_unit_vector(bearing):  # bearing -> (x, y) unit vector, y down like the image
             return math.sin(math.radians(bearing)), -math.cos(math.radians(bearing))
 
-        tdx, tdy = unit(tangent_bearing)
-        rdx, rdy = unit(ball_bearing)
+        tdx, tdy = get_unit_vector(tangent_bearing)
+        rdx, rdy = get_unit_vector(ball_bearing)
         vx = tangent_speed * tdx + radial_speed * rdx
         vy = tangent_speed * tdy + radial_speed * rdy
 
