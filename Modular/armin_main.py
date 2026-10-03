@@ -198,9 +198,9 @@ class ArminApplication:
 
             t3 = time.perf_counter()
             if t3 - t_report >= 1.0:
-                print(f"[perf] {loops} fps | process {proc/loops*1000:.1f} ms | "
-                    f"encode {enc_t/max(sent,1)*1000:.1f} ms | sent {sent} skipped {skipped} | "
-                    f"{kb/max(sent,1):.0f} KB/frame | {kb*8/1000:.1f} Mbit/s")
+                # print(f"[perf] {loops} fps | process {proc/loops*1000:.1f} ms | "
+                #     f"encode {enc_t/max(sent,1)*1000:.1f} ms | sent {sent} skipped {skipped} | "
+                #     f"{kb/max(sent,1):.0f} KB/frame | {kb*8/1000:.1f} Mbit/s")
                 t_report = t3
                 loops = sent = skipped = 0
                 proc = enc_t = kb = 0.0
@@ -364,6 +364,8 @@ class ArminApplication:
             print(goal_distance)
             if goal_vector:
                 if goal_distance < vision.goal_stop_distance:
+                    motors.spin_dribbler(False)
+                    time.sleep(0.4)
                     solenoid.kick()
                     motors.stop()
                 motors.spin_dribbler(True)

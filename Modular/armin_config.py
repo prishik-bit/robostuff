@@ -74,7 +74,7 @@ class VisionConfig:
     min_contour_area: int = 1
     dead_zone_radius: int = 132
     ball_dribble_radius: int = 147
-    orbit_radius: int = 205
+    orbit_radius: int = 190
     camera_rotation_offset: float = 0 #-90.0
     ball_lost_timeout: float = 0.5
     clahe_clip_limit: float = 2.5
@@ -85,17 +85,17 @@ class VisionConfig:
     last_ball_vector : Tuple[float, float] = None
     last_ball_distance : float = None
     
-    yellow_goal_lower: Tuple[int, int, int] = (20, 235, 100)
-    yellow_goal_upper: Tuple[int, int, int] = (40, 255, 255)
-    
-    blue_goal_lower: Tuple[int, int, int] = (95, 207, 60)
-    blue_goal_upper: Tuple[int, int, int] = (105, 255, 100)
-    
-    # yellow_goal_lower: Tuple[int, int, int] = (20, 180, 30)
+    # yellow_goal_lower: Tuple[int, int, int] = (20, 235, 100)
     # yellow_goal_upper: Tuple[int, int, int] = (40, 255, 255)
     
     # blue_goal_lower: Tuple[int, int, int] = (95, 207, 60)
     # blue_goal_upper: Tuple[int, int, int] = (105, 255, 100)
+    
+    yellow_goal_lower: Tuple[int, int, int] = (20, 180, 30)
+    yellow_goal_upper: Tuple[int, int, int] = (40, 255, 255)
+    
+    blue_goal_lower: Tuple[int, int, int] = (95, 231, 160)
+    blue_goal_upper: Tuple[int, int, int] = (120, 255, 200)
 
     goal_stop_distance : int = 200
     goal_min_contour_area : int = 120  # goals are big; a larger floor rejects speckle
@@ -185,7 +185,7 @@ class ImuConfig:
 class SolenoidConfig:
     """GPIO address and active time for solenoid"""
     GPIOpin: int = 17
-    active_time: float = 0.01
+    active_time: float = 0.8
     
 @dataclass(frozen=True)
 class RobotConfig:
