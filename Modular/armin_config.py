@@ -68,8 +68,8 @@ class VisionConfig:
     # ball_upper: Tuple[int, int, int] = (15, 255, 255)
     
     # Values for in-house testing
-    ball_lower: Tuple[int, int, int] = (0, 200, 70)
-    ball_upper: Tuple[int, int, int] = (15, 255, 255)
+    ball_lower: Tuple[int, int, int] = (0, 180, 70)
+    ball_upper: Tuple[int, int, int] = (23, 255, 255)
     
     min_contour_area: int = 1
     dead_zone_radius: int = 132
@@ -97,7 +97,7 @@ class VisionConfig:
     blue_goal_lower: Tuple[int, int, int] = (95, 200, 160)
     blue_goal_upper: Tuple[int, int, int] = (120, 255, 255)
 
-    goal_stop_distance : int = 200
+    goal_stop_distance : int = 190
     goal_min_contour_area : int = 120  # goals are big; a larger floor rejects speckle
     
     last_goal_vector : Tuple[float, float] = None

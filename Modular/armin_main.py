@@ -365,12 +365,16 @@ class ArminApplication:
             print("going to goal")
             if goal_vector:
                 if goal_distance < vision.goal_stop_distance:
+                    
+                    print("stopping")
+                    
                     motors.spin_dribbler(False)
                     time.sleep(0.4)
                     solenoid.kick()
                     motors.stop()
-                motors.spin_dribbler(True)
-                motors.drive_to_goal(goal_bearing, rotation_speed)
+                else:
+                    motors.spin_dribbler(True)
+                    motors.drive_to_goal(goal_bearing, rotation_speed)
             else:
                 motors.spin_dribbler(True)
                 motors.spin(motors.config.max_speed * 0.7)
