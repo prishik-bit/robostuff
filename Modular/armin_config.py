@@ -182,6 +182,73 @@ class ImuConfig:
     address: int = 0x4A
 
 @dataclass(frozen=True)
+class LidarConfig:
+    """UART port, filtering, and mounting for the LDRobot D500 (LD19) lidar."""
+
+    port: str = '/dev/serial0'  # Pi GPIO14/15 UART; a USB adapter shows up as /dev/ttyUSB0
+    baudrate: int = 230_400
+    min_distance_mm: int = 20      # D500 rated range is 0.02 m - 12 m
+    max_distance_mm: int = 12_000
+    min_intensity: int = 100       # weaker returns are usually noise or glancing hits
+    stale_after: float = 0.3       # seconds before a bin's reading is treated as unknown
+    mounting_offset: float = 0.0   # degrees to add so lidar 0 lines up with robot forward
+
+@dataclass(frozen=True)
+class MotionConfig:
+    """Field-frame motion control used by armin_motion.MotionController (cm, degrees)."""
+
+    field_half_x: float = 82.0          # targets are clamped this far from the centre spot
+    field_half_y: float = 112.0         # (walls are at 91 / 121.5; leaves a robot radius)
+    arrive_radius: float = 3.0          # cm: closer than this counts as arrived
+    slow_radius: float = 30.0           # cm: start ramping speed down inside this
+    min_speed_ratio: float = 0.15       # ramp floor so the bot doesn't stall short of target
+    heading_tolerance_deg: float = 3.0
+    heading_full_speed_deg: float = 60.0  # full rotation speed beyond this heading error
+    max_rotation_ratio: float = 0.6     # of max_speed
+    kick_cooldown: float = 0.5          # s between solenoid kicks
+
+@dataclass(frozen=True)
+class GoalieConfig:
+    """Goalie geometry and thresholds for armin_goalie (field cm, our goal at -y).
+
+    Penalty area size is not in the 2026 rules text; measure it on the real field.
+    Rule 2.6.1: a robot may never be FULLY inside the penalty area, so the goalie's
+    centre is kept within max_intrusion of the penalty line (most of the body outside).
+    """
+
+    robot_radius: float = 9.0
+    goal_line_y: float = -109.5         # our goal mouth (front face of the posts)
+    goal_half_width: float = 30.0       # posts at |x| = 30
+    penalty_front_y: float = -84.5      # front line of our penalty area (goal line + 25)
+    penalty_half_width: float = 40.0    # MEASURE: penalty area is ~80 cm wide
+    max_intrusion: float = 4.0          # cm the centre may go past the penalty line
+    guard_half_width: float = 38.0      # how far sideways the goalie slides on its line
+    engage_depth: float = 35.0          # go for a ball within this far in front of the penalty line
+    engage_half_width: float = 55.0     # ...and within this |x|
+    engage_max_speed: float = 60.0      # cm/s: faster balls are blocked, not chased
+    engage_release_margin: float = 20.0 # cm the engage zone grows by once we've committed
+    intercept_min_speed: float = 25.0   # cm/s toward our goal before we predict a crossing
+    intercept_horizon: float = 1.5      # s ahead we bother predicting
+    approach_offset: float = 14.0       # cm behind the ball (goal side) to line up before pushing
+    push_heading_tolerance_deg: float = 25.0  # only push once the dribbler faces this close to the push line
+    capture_distance: float = 4.0       # cm gap between bumper and ball that counts as "on the dribbler"
+    capture_half_width: float = 5.0     # cm either side of centre-line for a geometric capture
+    mate_wait_gap: float = 12.0         # cm outside the penalty line to wait while the mate is in it
+    hold_timeout: float = 1.0           # s holding the ball with no role swap before we clear it
+    clear_heading_tolerance_deg: float = 20.0  # kick to clear only when facing this close to upfield
+
+@dataclass(frozen=True)
+class RoleConfig:
+    """Goalie/striker swapping between the two robots (see armin_roles)."""
+
+    robot_id: int = 1                   # 1 or 2; the other robot gets the other id
+    default_role: str = 'striker'       # role at power-on and whenever the radio is lost
+    possession_confirm: float = 0.25    # s the goalie must hold the ball before claiming striker
+    swap_cooldown: float = 1.0          # s after a role change before another voluntary change
+    conflict_timeout: float = 0.3       # s both robots may claim the same role before tie-break
+    mate_stale: float = 0.5             # s without a heartbeat = no radio (match field_model.MATE_STALE)
+
+@dataclass(frozen=True)
 class SolenoidConfig:
     """GPIO address and active time for solenoid"""
     GPIOpin: int = 17
@@ -197,4 +264,8 @@ class RobotConfig:
     network: NetworkConfig = field(default_factory=NetworkConfig)
     control: ControlConfig = field(default_factory=ControlConfig)
     imu: ImuConfig = field(default_factory=ImuConfig)
+    lidar: LidarConfig = field(default_factory=LidarConfig)
+    motion: MotionConfig = field(default_factory=MotionConfig)
+    goalie: GoalieConfig = field(default_factory=GoalieConfig)
+    roles: RoleConfig = field(default_factory=RoleConfig)
     solenoid: SolenoidConfig = field(default_factory=SolenoidConfig)
